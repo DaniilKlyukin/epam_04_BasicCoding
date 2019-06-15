@@ -17,6 +17,8 @@ namespace Izh_04_Basic_Coding
         {
             MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(int.MaxValue, 8, 4, 10), 2147481743);
             MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(int.MinValue, -10, 20, 30), -10485760);
+            MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(7, 7, 4, 5), 55);
+            MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(1, 101, 0, 1), 1);
         }
 
 
@@ -87,9 +89,12 @@ namespace Izh_04_Basic_Coding
         }
 
         [TestCase("AsdfeAd", "Assqaasssqs", ExpectedResult = "AsdfeAdqaaq")]
+        [TestCase("ABCDEFGhijklmn", "abcdefgHIJKLMN", ExpectedResult = "ABCDEFGhijklmnabcdefgHIJKLMN")]
+        [TestCase("a", "a", ExpectedResult = "a")]
+        [TestCase("Hell", "o my friEnd", ExpectedResult = "Hello my friEnd")]
         public string CheckStringConcatenation(string firstStr, string secondStr)
         {
-            throw new NotImplementedException();
+            return tWorker.ConcatStrings(firstStr, secondStr);
         }
 
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, 69, 70, 15, 17 }, 7, ExpectedResult = new int[] { 7, 7, 70, 17 })]
