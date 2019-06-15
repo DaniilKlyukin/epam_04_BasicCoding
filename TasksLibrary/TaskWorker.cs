@@ -84,6 +84,12 @@
             return str1 + string.Join(string.Empty, str2.Where(x => !str1.Contains(x)));
         }
 
+        /// <summary>
+        /// Finds the nearest number greater than the given.
+        /// </summary>
+        /// <param name="inputNumber">Source Int number.</param>
+        /// <param name="elapsedMilliseconds">Spent time at work.</param>
+        /// <returns>Nearest greate number.</returns>
         public int FindNextBiggerNumber(int inputNumber, out double elapsedMilliseconds)
         {
             var watcher = new Stopwatch();
@@ -107,7 +113,34 @@
             return result;
         }
 
-        public static IEnumerable<int[]> GetCombinations(int[] array)
+        /// <summary>
+        /// Filtrate array - only numbers containing the specified digit remain.
+        /// </summary>
+        /// <param name="inputArray">Source Int array.</param>
+        /// <param name="digit">Array search digit.</param>
+        /// <returns>An array with numbers that contain the given digit.</returns>
+        public int[] FilterDigit(int[] inputArray, int digit)
+        {
+            var result = new List<int>();
+
+            foreach (var value in inputArray)
+            {
+                var absValue = value < 0 ? -value : value;
+                var currentArray = ConvertNumberToDigitsArray(absValue);
+                foreach (var d in currentArray)
+                {
+                    if (digit == d)
+                    {
+                        result.Add(value);
+                        break;
+                    }
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private static IEnumerable<int[]> GetCombinations(int[] array)
         {
             if (array == null || array.Length == 0)
             {
@@ -153,6 +186,9 @@
 
         private int[] ConvertNumberToDigitsArray(int number)
         {
+            if (number == 0)
+                return new int[] { 0 };
+
             var digitsCount = (int)Math.Log10(number) + 1;
             var digitsArray = new int[digitsCount];
 
