@@ -1,13 +1,65 @@
 ﻿using System;
 using NUnit.Framework;
+using MSUnitTest = Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 using TasksLibrary;
 
 namespace Izh_04_Basic_Coding
 {
     [TestFixture]
+    [MSUnitTest.TestClass]
     public class Izh04BasicCodingTests
     {
-        static TaskWorker tWorker = new TaskWorker();
+        TaskWorker tWorker = new TaskWorker();
+
+        [MSUnitTest.TestMethod]
+        public void CheckInsertNumberMSUnitTests()
+        {
+            MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(int.MaxValue, 8, 4, 10), 2147481743);
+            MSUnitTest.Assert.AreEqual(tWorker.InsertNumber(int.MinValue, -10, 20, 30), -10485760);
+        }
+
+
+        [TestCase(-9999, 42, 0, 10, ExpectedResult = -8234)]
+        [TestCase(0, 0, 0, 0, ExpectedResult = 0)]
+        [TestCase(999, -452, 2, 7, ExpectedResult = 787)]
+        [TestCase(15, 15, 0, 0, ExpectedResult = 15)]
+        [TestCase(8, 15, 0, 0, ExpectedResult = 9)]
+        [TestCase(8, 15, 3, 8, ExpectedResult = 120)]
+        public int CheckInsertNumber(int numberSource, int numberIn, int i, int j)
+        {
+            return tWorker.InsertNumber(numberSource, numberIn, i, j);
+        }
+
+        [TestCase(9783, ExpectedResult = new bool[32] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, true, true, false, false, false, true, true, false, true, true, true })]
+        [TestCase(-137, ExpectedResult = new bool[32] { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true, false, false, true })]
+        [TestCase(8, ExpectedResult = new bool[32] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false })]
+        [TestCase(1, ExpectedResult = new bool[32] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true })]
+        public bool[] CheckConvertNumberToBitArray(int number)
+        {
+            var type = typeof(TaskWorker);
+            var instance = Activator.CreateInstance(type);
+
+            var method = tWorker.GetType()
+                .GetMethod("ConvertNumberToBitArray", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return (bool[])method.Invoke(instance, new object[] { number });
+        }
+
+        [TestCase(new bool[] { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true, false, false, true }, ExpectedResult = -137)]
+        [TestCase(new bool[] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false }, ExpectedResult = 8)]
+        [TestCase(new bool[] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true }, ExpectedResult = 1)]
+        [TestCase(new bool[] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, true, true, false, false, false, true, true, false, true, true, true }, ExpectedResult = 9783)]
+        public int CheckConvertBitArrayToNumber(bool[] arr)
+        {
+            var type = typeof(TaskWorker);
+            var instance = Activator.CreateInstance(type);
+
+            var method = tWorker.GetType()
+                .GetMethod("ConvertBitArrayToNumber", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return (int)method.Invoke(instance, new object[] { arr });
+        }
 
         [TestCase(new int[] { int.MaxValue }, ExpectedResult = int.MaxValue)]
         [TestCase(new int[] { 1, 1, 1, 1, 1, 1, 1 }, ExpectedResult = 1)]
@@ -20,7 +72,8 @@ namespace Izh_04_Basic_Coding
         [Test]
         public void CheckMaxElementFindingNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => tWorker.FindMaxElementInArray(null));
+            NUnit.Framework.Assert.Throws<ArgumentNullException>(
+                () => tWorker.FindMaxElementInArray(null));
         }
 
         [TestCase(new double[] { }, ExpectedResult = -1)]
