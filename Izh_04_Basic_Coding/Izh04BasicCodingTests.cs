@@ -3,13 +3,19 @@ using NUnit.Framework;
 using MSUnitTest = Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using TasksLibrary;
+using System.Data;
 
 namespace Izh_04_Basic_Coding
 {
+    using System.IO;
+    using System.Linq;
+    using MSUnitTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+
     [TestFixture]
     [MSUnitTest.TestClass]
     public class Izh04BasicCodingTests
     {
+        public MSUnitTestContext TestContext { get; set; }
         TaskWorker tWorker = new TaskWorker();
 
         [MSUnitTest.TestMethod]
@@ -142,15 +148,47 @@ namespace Izh_04_Basic_Coding
         [TestCase(20, ExpectedResult = -1)]
         public int CheckFindingNextBiggerNumber(int inputNumber)
         {
-            return tWorker.FindNextBiggerNumber(inputNumber);
+            double timer;
+            return tWorker.FindNextBiggerNumber(inputNumber, out timer);
         }
 
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, 69, 70, 15, 17 }, 7, ExpectedResult = new int[] { 7, 7, 70, 17 })]
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 6, ExpectedResult = new int[] { 6, 68, -69 })]
-        [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 9, ExpectedResult = new int[] { })]
+        [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 9, ExpectedResult = new int[] { -69 })]
+        [TestCase(new int[] { 0, 1, 10, 101 }, 0, ExpectedResult = new int[] { 0, 10, 101 })]
+        [TestCase(new int[] { 10, 23, 34, 56, 78 }, 9, ExpectedResult = new int[] { })]
         public int[] CheckDigitFiltering(int[] sourceArray, int digit)
         {
-            throw new NotImplementedException();
+            return tWorker.FilterDigit(sourceArray, digit);
+        }
+
+        [MSUnitTest.TestMethod]
+        public void CheckDigitFilteringNegativeNumbers()
+        {
+            MSUnitTest.CollectionAssert.AreEqual(tWorker.FilterDigit(new int[] { -10, 15, -9, -21, 0, 3 }, 1), new int[] { -10, 15, -21 });
+            MSUnitTest.CollectionAssert.AreEqual(tWorker.FilterDigit(new int[] { -1, -2, -3, -4, -5, -6, -7, -8, -9, 0 }, 5), new int[] { -5 });
+            MSUnitTest.CollectionAssert.AreEqual(tWorker.FilterDigit(new int[] { -10, -11, -111, -1111, 11111 }, 1), new int[] { -10, -11, -111, -1111, 11111 });
+            MSUnitTest.CollectionAssert.AreEqual(tWorker.FilterDigit(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 9), new int[] { -69 });
+        }
+
+        const string dataDriver = "System.Data.OleDb";
+        const string connectionStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=B:\\git\\epam\\epam_04_BasicCoding\\data.xlsx;Extended Properties=\"Excel 12.0 Xml;HDR=YES\";";
+
+        [MSUnitTest.TestMethod]
+        [MSUnitTest.DataSource(dataDriver, connectionStr, "Shit1$", MSUnitTest.DataAccessMethod.Sequential)]
+        public void CheckDigitFilteringDDT()
+        {
+            var rowInputArray = TestContext.DataRow["Input array"].ToString();
+            var rowInputDigit = TestContext.DataRow["Input digit"].ToString();
+            var rowExpected = TestContext.DataRow["Expected Result"].ToString();
+            var rowException = TestContext.DataRow["Exception"].ToString();
+            var rowComment = TestContext.DataRow["Comment"].ToString();
+
+            var sourceArray = rowInputArray.Split(' ').Select(x => int.Parse(x)).ToArray();
+            var digit = int.Parse(rowInputDigit);
+
+            var actualResult = string.Join(" ", tWorker.FilterDigit(sourceArray, digit));
+            Assert.AreEqual(rowExpected, actualResult);
         }
     }
 }
