@@ -1,6 +1,7 @@
 ﻿namespace TasksLibrary
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     public class TaskWorker
@@ -71,9 +72,116 @@
             return this.ConvertBitArrayToNumber(resultBitArray);
         }
 
+        /// <summary>
+        /// Connects the strings, removing from the second string the characters that are in the first.
+        /// </summary>
+        /// <param name="str1">First string.</param>
+        /// <param name="str2">Second string.</param>
+        /// <returns>Connected strings.</returns>
         public string ConcatStrings(string str1, string str2)
         {
             return str1 + string.Join(string.Empty, str2.Where(x => !str1.Contains(x)));
+        }
+
+        public int FindNextBiggerNumber(int inputNumber)
+        {
+            if (!HasNextBiggerNumber(inputNumber))
+                return -1;
+
+            var digitsArray = ConvertNumberToDigitsArray(inputNumber);
+
+            return GetCombinations(digitsArray)
+                .Select(x => ConvertDigitsArrayToNumber(x))
+                .Where(x => x > inputNumber)
+                .OrderBy(x => Math.Abs(x - inputNumber))
+                .First();
+        }
+
+        public static IEnumerable<int[]> GetCombinations(int[] array)
+        {
+            if (array == null || array.Length == 0)
+            {
+                yield return new int[0];
+            }
+            else
+            {
+                for (int i = 0; i < array.Length; ++i)
+                {
+                    var item = array[i];
+                    int j = -1;
+                    var rest = Array.FindAll(
+                        array, p => ++j != i);
+
+                    foreach (int[] restPermuted in GetCombinations(rest))
+                    {
+                        j = -1;
+                        yield return Array.ConvertAll(
+                            array,
+                            p => ++j == 0 ? item : restPermuted[j - 1]);
+                    }
+                }
+            }
+        }
+
+        private bool HasNextBiggerNumber(int number)
+        {
+            var digitsArray = ConvertNumberToDigitsArray(number);
+
+            var zerosCount = 0;
+            var digitsDescending = true;
+            for (int i = 1; i < digitsArray.Length; i++)
+            {
+                if (i > 0 && digitsArray[i - 1] < digitsArray[i])
+                    digitsDescending = false;
+
+                if (digitsArray[i] == 0)
+                    zerosCount++;
+            }
+
+            return zerosCount < digitsArray.Length - 1 && !digitsDescending;
+        }
+
+        private int[] SwapAndReturnNewArray(int[] arr, int i, int j)
+        {
+            var result = new int[arr.Length];
+            Array.Copy(arr, result, arr.Length);
+
+            var temp = result[i];
+            result[i] = result[j];
+            result[j] = temp;
+
+            return result;
+        }
+
+        private int[] ConvertNumberToDigitsArray(int number)
+        {
+            var digitsCount = (int)Math.Log10(number) + 1;
+            var digitsArray = new int[digitsCount];
+
+            var minNextRankNumber = 10;
+            var numberOnRight = 0;
+            for (int i = 0; i < digitsCount; i++)
+            {
+                digitsArray[digitsCount - i - 1] = ((number % minNextRankNumber) - numberOnRight) / (minNextRankNumber / 10);
+                minNextRankNumber *= 10;
+            }
+
+            return digitsArray;
+        }
+
+        private int ConvertDigitsArrayToNumber(int[] digits)
+        {
+            var result = 0;
+            var rank = 1;
+            var digitsCount = digits.Length;
+
+            for (int i = 0; i < digitsCount; i++)
+            {
+                result += digits[digitsCount - i - 1] * rank;
+                rank *= 10;
+            }
+
+            return result;
         }
 
         /// <summary>
