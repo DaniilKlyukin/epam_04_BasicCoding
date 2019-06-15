@@ -71,6 +71,11 @@
             return this.ConvertBitArrayToNumber(resultBitArray);
         }
 
+        public string ConcatStrings(string str1, string str2)
+        {
+            return str1 + string.Join(string.Empty, str2.Where(x => !str1.Contains(x)));
+        }
+
         /// <summary>
         /// Method for recursively searching the maximum element of array.
         /// </summary>
