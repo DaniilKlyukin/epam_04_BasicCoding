@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     public class TaskWorker
@@ -83,18 +84,27 @@
             return str1 + string.Join(string.Empty, str2.Where(x => !str1.Contains(x)));
         }
 
-        public int FindNextBiggerNumber(int inputNumber)
+        public int FindNextBiggerNumber(int inputNumber, out double elapsedMilliseconds)
         {
+            var watcher = new Stopwatch();
+            elapsedMilliseconds = 0;
+            watcher.Start();
+
             if (!HasNextBiggerNumber(inputNumber))
                 return -1;
 
             var digitsArray = ConvertNumberToDigitsArray(inputNumber);
 
-            return GetCombinations(digitsArray)
+            var result = GetCombinations(digitsArray)
                 .Select(x => ConvertDigitsArrayToNumber(x))
                 .Where(x => x > inputNumber)
                 .OrderBy(x => Math.Abs(x - inputNumber))
                 .First();
+
+            watcher.Stop();
+            elapsedMilliseconds = watcher.ElapsedMilliseconds;
+
+            return result;
         }
 
         public static IEnumerable<int[]> GetCombinations(int[] array)
@@ -139,18 +149,6 @@
             }
 
             return zerosCount < digitsArray.Length - 1 && !digitsDescending;
-        }
-
-        private int[] SwapAndReturnNewArray(int[] arr, int i, int j)
-        {
-            var result = new int[arr.Length];
-            Array.Copy(arr, result, arr.Length);
-
-            var temp = result[i];
-            result[i] = result[j];
-            result[j] = temp;
-
-            return result;
         }
 
         private int[] ConvertNumberToDigitsArray(int number)
