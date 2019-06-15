@@ -97,6 +97,54 @@ namespace Izh_04_Basic_Coding
             return tWorker.ConcatStrings(firstStr, secondStr);
         }
 
+        [TestCase(100, ExpectedResult = new int[] { 1, 0, 0 })]
+        [TestCase(983754210, ExpectedResult = new int[] { 9, 8, 3, 7, 5, 4, 2, 1, 0 })]
+        [TestCase(8, ExpectedResult = new int[] { 8 })]
+        [TestCase(123, ExpectedResult = new int[] { 1, 2, 3 })]
+        public int[] CheckConvertNumberToDigitsArray(int number)
+        {
+            var type = typeof(TaskWorker);
+            var instance = Activator.CreateInstance(type);
+
+            var method = tWorker.GetType()
+                .GetMethod("ConvertNumberToDigitsArray", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return (int[])method.Invoke(instance, new object[] { number });
+        }
+
+        [TestCase(new int[] { 1, 0, 0 }, ExpectedResult = 100)]
+        [TestCase(new int[] { 9, 8, 3, 7, 5, 4, 2, 1, 0 }, ExpectedResult = 983754210)]
+        [TestCase(new int[] { 8 }, ExpectedResult = 8)]
+        [TestCase(new int[] { 1, 2, 3 }, ExpectedResult = 123)]
+        public int CheckConvertDigitsArrayToNumber(int[] digits)
+        {
+            var type = typeof(TaskWorker);
+            var instance = Activator.CreateInstance(type);
+
+            var method = tWorker.GetType()
+                .GetMethod("ConvertDigitsArrayToNumber", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return (int)method.Invoke(instance, new object[] { digits });
+        }
+
+        [TestCase(12, ExpectedResult = 21)]
+        [TestCase(999, ExpectedResult = -1)]
+        [TestCase(10001, ExpectedResult = 10010)]
+        [TestCase(987654321, ExpectedResult = -1)]
+        [TestCase(513, ExpectedResult = 531)]
+        [TestCase(2017, ExpectedResult = 2071)]
+        [TestCase(414, ExpectedResult = 441)]
+        [TestCase(144, ExpectedResult = 414)]
+        [TestCase(1234321, ExpectedResult = 1241233)]
+        [TestCase(1234126, ExpectedResult = 1234162)]
+        [TestCase(3456432, ExpectedResult = 3462345)]
+        [TestCase(10, ExpectedResult = -1)]
+        [TestCase(20, ExpectedResult = -1)]
+        public int CheckFindingNextBiggerNumber(int inputNumber)
+        {
+            return tWorker.FindNextBiggerNumber(inputNumber);
+        }
+
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, 69, 70, 15, 17 }, 7, ExpectedResult = new int[] { 7, 7, 70, 17 })]
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 6, ExpectedResult = new int[] { 6, 68, -69 })]
         [TestCase(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 9, ExpectedResult = new int[] { })]
