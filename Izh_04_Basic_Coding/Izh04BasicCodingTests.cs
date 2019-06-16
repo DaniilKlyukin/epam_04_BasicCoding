@@ -171,18 +171,15 @@ namespace Izh_04_Basic_Coding
             MSUnitTest.CollectionAssert.AreEqual(tWorker.FilterDigit(new int[] { 7, 1, 2, 3, 4, 5, 6, 7, 68, -69, 70, 15, 17 }, 9), new int[] { -69 });
         }
 
-        const string dataDriver = "System.Data.OleDb";
-        const string connectionStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=B:\\git\\epam\\epam_04_BasicCoding\\data.xlsx;Extended Properties=\"Excel 12.0 Xml;HDR=YES\";";
-
         [MSUnitTest.TestMethod]
-        [MSUnitTest.DataSource(dataDriver, connectionStr, "Shit1$", MSUnitTest.DataAccessMethod.Sequential)]
+        [MSUnitTest.DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV",
+            @"|DataDirectory|\data.csv", "data#csv", MSUnitTest.DataAccessMethod.Sequential),
+            MSUnitTest.DeploymentItem("data.csv")]
         public void CheckDigitFilteringDDT()
         {
             var rowInputArray = TestContext.DataRow["Input array"].ToString();
             var rowInputDigit = TestContext.DataRow["Input digit"].ToString();
             var rowExpected = TestContext.DataRow["Expected Result"].ToString();
-            var rowException = TestContext.DataRow["Exception"].ToString();
-            var rowComment = TestContext.DataRow["Comment"].ToString();
 
             var sourceArray = rowInputArray.Split(' ').Select(x => int.Parse(x)).ToArray();
             var digit = int.Parse(rowInputDigit);
