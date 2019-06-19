@@ -3,11 +3,9 @@ using NUnit.Framework;
 using MSUnitTest = Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using TasksLibrary;
-using System.Data;
 
 namespace Izh_04_Basic_Coding
 {
-    using System.IO;
     using System.Linq;
     using MSUnitTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
